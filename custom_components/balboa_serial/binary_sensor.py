@@ -14,6 +14,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import BalboaConfigEntry
 from .entity import BalboaEntity
 from .pybalboa import SpaClient
+from .pybalboa.enums import HeatState
 
 
 async def async_setup_entry(
@@ -51,6 +52,12 @@ BINARY_SENSOR_DESCRIPTIONS = (
         translation_key="filter_2",
         device_class=BinarySensorDeviceClass.RUNNING,
         is_on_fn=lambda spa: spa.filter_cycle_2_running,
+    ),
+    BalboaBinarySensorEntityDescription(
+        key="HeaterActive",
+        translation_key="heater_active",
+        device_class=BinarySensorDeviceClass.HEAT,
+        is_on_fn=lambda spa: spa.heat_state == HeatState.HEATING,
     ),
 )
 CIRCULATION_PUMP_DESCRIPTION = BalboaBinarySensorEntityDescription(

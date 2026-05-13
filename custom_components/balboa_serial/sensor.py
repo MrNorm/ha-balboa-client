@@ -29,13 +29,13 @@ def _spa_state(spa: SpaClient) -> str | None:
 
 
 SENSOR_DESCRIPTIONS: tuple[BalboaSensorEntityDescription, ...] = (
+    # Operational — visible by default, useful for automations
     BalboaSensorEntityDescription(
         key="spa_state",
         translation_key="spa_state",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        device_class=None,
         value_fn=_spa_state,
     ),
+    # Diagnostic — hidden in the device's diagnostics section
     BalboaSensorEntityDescription(
         key="heater_type",
         translation_key="heater_type",
@@ -48,12 +48,6 @@ SENSOR_DESCRIPTIONS: tuple[BalboaSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfElectricPotential.VOLT,
         value_fn=lambda spa: spa.voltage,
-    ),
-    BalboaSensorEntityDescription(
-        key="software_version",
-        translation_key="software_version",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda spa: spa.software_version,
     ),
 )
 

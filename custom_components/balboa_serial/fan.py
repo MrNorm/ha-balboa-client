@@ -91,6 +91,7 @@ class BalboaPumpFanEntity(_ControlBackedFanEntity):
     """Representation of a Balboa Spa pump fan entity."""
 
     _attr_translation_key = "pump"
+    _attr_icon = "mdi:water-pump"
 
 
 class BalboaBlowerFanEntity(_ControlBackedFanEntity):

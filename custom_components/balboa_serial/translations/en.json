@@ -25,7 +25,8 @@
     "binary_sensor": {
       "circ_pump": { "name": "Circulation pump" },
       "filter_1": { "name": "Filter cycle 1" },
-      "filter_2": { "name": "Filter cycle 2" }
+      "filter_2": { "name": "Filter cycle 2" },
+      "heater_active": { "name": "Heater active" }
     },
     "climate": {
       "balboa_serial": {
@@ -50,8 +51,8 @@
       "blower": { "name": "Blower {index}" }
     },
     "light": {
-      "light_of_n": { "name": "Light {index}" },
-      "only_light": { "name": "Light" }
+      "light_of_n": { "name": "Spa light {index}" },
+      "only_light": { "name": "Spa light" }
     },
     "select": {
       "temperature_range": {
@@ -82,8 +83,7 @@
         }
       },
       "heater_type": { "name": "Heater type" },
-      "voltage": { "name": "Voltage" },
-      "software_version": { "name": "Software version" }
+      "voltage": { "name": "Voltage" }
     },
     "time": {
       "filter_cycle_end": { "name": "Filter cycle {index} end" },

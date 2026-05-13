@@ -46,6 +46,23 @@ timeout 5 nc <bridge-ip> <bridge-port> | xxd | head
 
 If `nc` shows nothing or wrong-looking bytes, fix the bridge first (wrong port / wrong baud / wrong wires / something else holding the socket) — the integration will not work until plain `nc` shows valid frames.
 
+## Troubleshooting
+
+**Integration fails to set up with "Unable to connect"**
+The bridge isn't reachable on the chosen port. Run `timeout 5 nc <ip> <port> | xxd | head` from any Linux box on the same network and check for `7e ...` frames. If you don't see them, the bridge port, baud rate, or wiring is the problem — not this integration.
+
+**Integration fails with "Unable to load spa configuration"**
+Bridge is reachable but no valid Balboa frames are flowing in the 15-second config window. Usually means wrong baud rate (must be 115200 8N1) or another client is holding the bridge's single TCP slot (most bridges only accept one client at a time — check for stale connections, especially bwalink if you're migrating).
+
+**Where is the blower / bubble jets entity?**
+`fan.blower_1` (and `fan.blower_2` if you have two). Earlier versions of this integration put the blower inside the climate entity's `fan_mode` dropdown, copying the upstream HA integration. v0.3.0+ exposes blowers as proper fan entities.
+
+**Aux outputs or misters aren't appearing**
+The integration only creates entities for controls the spa actually reports. If `spa.aux` or `spa.misters` is empty after a config load, your spa's hardware doesn't have them — the upstream `bwalink` integration would behave the same way.
+
+**Getting a state dump for issues**
+Settings → Devices & Services → Balboa Spa (Serial-to-IP) → ⋮ menu → **Download diagnostics**. The JSON includes everything pybalboa knows about your spa, with host/MAC redacted. Attach to any GitHub issue.
+
 ## Coexisting with the official `balboa` integration
 
 The two integrations use different domains (`balboa` vs `balboa_serial`) and isolated copies of pybalboa, so they can run side-by-side without interference. You don't need to remove the official one to try this.
