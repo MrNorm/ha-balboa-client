@@ -24,3 +24,6 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Brands check expects either an entry in home-assistant/brands or
+          # local brand assets. Personal HACS integration, not worth it.
+          ignore: brands
