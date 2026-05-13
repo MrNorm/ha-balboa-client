@@ -746,7 +746,10 @@ class SpaClient(EventMixin):
         self._update_control_states(ControlType.PUMP, pump_states)
         circulation_pump = (data[13] & 0x03) >> 1
         self._update_control_states(ControlType.CIRCULATION_PUMP, [circulation_pump])
-        blower_states = byte_parser(data[13], 1, 2, 2)
+        # Upstream pybalboa reads blower state with offset=1, which overlaps
+        # bit 1 (circ pump). Empirically (probed against an SRBP601F) the
+        # blower state is at bits 2-3 and 4-5 — offset=2.
+        blower_states = byte_parser(data[13], 2, 2, 2)
         self._update_control_states(ControlType.BLOWER, blower_states)
         mister_states = byte_parser(data[15], count=3)
         self._update_control_states(ControlType.MISTER, mister_states)
