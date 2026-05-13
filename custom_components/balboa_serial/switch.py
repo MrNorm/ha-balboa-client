@@ -12,7 +12,13 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import BalboaConfigEntry
 from .entity import BalboaEntity
 from .pybalboa import SpaClient, SpaControl
-from .pybalboa.enums import OffOnState, UnknownState
+from .pybalboa.enums import (
+    MessageType,
+    OffOnState,
+    SpaState,
+    ToggleItemCode,
+    UnknownState,
+)
 
 
 async def async_setup_entry(
@@ -25,6 +31,7 @@ async def async_setup_entry(
     entities: list[SwitchEntity] = [
         FilterCycle2EnabledSwitch(spa),
         TwentyFourHourClockSwitch(spa),
+        HoldModeSwitch(spa),
     ]
     entities.extend(AuxSwitchEntity(control) for control in spa.aux)
     entities.extend(MisterSwitchEntity(control) for control in spa.misters)
@@ -67,6 +74,38 @@ class TwentyFourHourClockSwitch(BalboaEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         await self._client.set_24_hour_time(False)
+
+
+class HoldModeSwitch(BalboaEntity, SwitchEntity):
+    """Put the spa into hold mode (pumps off for service / cover work).
+
+    Hold mode is toggled by a single TOGGLE_STATE message; the read state
+    comes from the spa's reported SpaState. We only emit the toggle when the
+    desired state differs from the current one.
+    """
+
+    _attr_icon = "mdi:pause-circle"
+
+    def __init__(self, spa: SpaClient) -> None:
+        super().__init__(spa, "hold_mode")
+        self._attr_translation_key = "hold_mode"
+
+    @property
+    def is_on(self) -> bool:
+        return self._client.state == SpaState.HOLD_MODE
+
+    async def _toggle(self) -> None:
+        await self._client.send_message(
+            MessageType.TOGGLE_STATE, ToggleItemCode.HOLD_MODE
+        )
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        if not self.is_on:
+            await self._toggle()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        if self.is_on:
+            await self._toggle()
 
 
 class _ControlBackedSwitch(BalboaEntity, SwitchEntity):

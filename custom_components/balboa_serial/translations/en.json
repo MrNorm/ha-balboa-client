@@ -64,6 +64,7 @@
     "switch": {
       "filter_cycle_2_enabled": { "name": "Filter cycle 2 enabled" },
       "twenty_four_hour_time": { "name": "24-hour clock" },
+      "hold_mode": { "name": "Hold mode" },
       "aux": { "name": "Aux {index}" },
       "mister": { "name": "Mister {index}" }
     },
