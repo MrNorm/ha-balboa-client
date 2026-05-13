@@ -1,0 +1,7 @@
+{
+  "name": "Balboa Spa (Serial-to-IP)",
+  "render_readme": true,
+  "homeassistant": "2024.12.0",
+  "country": ["GB", "US"],
+  "zip_release": false
+}

@@ -1,0 +1,81 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Device is already configured"
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "unknown": "Unexpected error"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "host": "Host",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "IP address or hostname of your RS-485-to-TCP bridge (e.g. Elfin-EW11, ser2net).",
+          "port": "TCP port the bridge listens on (4257 matches the Balboa WiFi module default)."
+        },
+        "description": "Connect to the Balboa spa via a serial-to-IP bridge."
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "circ_pump": { "name": "Circulation pump" },
+      "filter_1": { "name": "Filter cycle 1" },
+      "filter_2": { "name": "Filter cycle 2" }
+    },
+    "climate": {
+      "balboa_serial": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "ready": "Ready",
+              "ready_in_rest": "Ready-in-rest",
+              "rest": "Rest"
+            }
+          }
+        }
+      }
+    },
+    "event": {
+      "fault": {
+        "name": "Fault"
+      }
+    },
+    "fan": {
+      "pump": { "name": "Pump {index}" }
+    },
+    "light": {
+      "light_of_n": { "name": "Light {index}" },
+      "only_light": { "name": "Light" }
+    },
+    "select": {
+      "temperature_range": {
+        "name": "Temperature range",
+        "state": {
+          "high": "High",
+          "low": "Low"
+        }
+      }
+    },
+    "switch": {
+      "filter_cycle_2_enabled": { "name": "Filter cycle 2 enabled" }
+    },
+    "time": {
+      "filter_cycle_end": { "name": "Filter cycle {index} end" },
+      "filter_cycle_start": { "name": "Filter cycle {index} start" }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "sync_time": "Keep the spa's clock synchronized with Home Assistant"
+        }
+      }
+    }
+  }
+}

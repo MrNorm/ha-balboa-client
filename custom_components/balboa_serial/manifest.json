@@ -1,0 +1,13 @@
+{
+  "domain": "balboa_serial",
+  "name": "Balboa Spa (Serial-to-IP)",
+  "codeowners": ["@MrNorm"],
+  "config_flow": true,
+  "documentation": "https://github.com/MrNorm/ha-balboa-client",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/MrNorm/ha-balboa-client/issues",
+  "loggers": ["custom_components.balboa_serial"],
+  "requirements": [],
+  "version": "0.1.0"
+}
