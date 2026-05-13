@@ -21,7 +21,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import BalboaConfigEntry
 from .const import DOMAIN
 from .entity import BalboaEntity
-from .pybalboa import SpaClient, SpaControl
+from .pybalboa import SpaClient
 from .pybalboa.enums import HeatMode, HeatState, TemperatureUnit
 
 HEAT_HVAC_MODE_MAP: dict[IntEnum, HVACMode] = {
@@ -68,13 +68,6 @@ class BalboaClimateEntity(BalboaEntity, ClimateEntity):
         super().__init__(client, "Climate")
         self._attr_preset_modes = [opt.name.lower() for opt in client.heat_mode.options]
 
-        self._blower: SpaControl | None = None
-        if client.blowers and (blower := client.blowers[0]) is not None:
-            self._blower = blower
-            self._attr_supported_features |= ClimateEntityFeature.FAN_MODE
-            self._fan_mode_map = {opt.name.lower(): opt for opt in blower.options}
-            self._attr_fan_modes = list(self._fan_mode_map)
-
     @property
     def hvac_mode(self) -> HVACMode | None:
         """Return the current HVAC mode."""
@@ -84,13 +77,6 @@ class BalboaClimateEntity(BalboaEntity, ClimateEntity):
     def hvac_action(self) -> HVACAction:
         """Return the current operation mode."""
         return HEAT_STATE_HVAC_ACTION_MAP[self._client.heat_state]
-
-    @property
-    def fan_mode(self) -> str | None:
-        """Return the fan setting."""
-        if (blower := self._blower) is not None:
-            return blower.state.name.lower()
-        return None
 
     @property
     def precision(self) -> float:
@@ -136,11 +122,6 @@ class BalboaClimateEntity(BalboaEntity, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         await self._client.heat_mode.set_state(HeatMode[preset_mode.upper()])
-
-    async def async_set_fan_mode(self, fan_mode: str) -> None:
-        """Set new fan mode."""
-        if (blower := self._blower) is not None:
-            await blower.set_state(self._fan_mode_map[fan_mode])
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""

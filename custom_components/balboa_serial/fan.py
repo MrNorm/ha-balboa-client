@@ -22,13 +22,15 @@ async def async_setup_entry(
     entry: BalboaConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up the spa's pumps."""
+    """Set up the spa's fan-like controls (pumps and blowers)."""
     spa = entry.runtime_data
-    async_add_entities(BalboaPumpFanEntity(control) for control in spa.pumps)
+    entities: list[FanEntity] = [BalboaPumpFanEntity(control) for control in spa.pumps]
+    entities.extend(BalboaBlowerFanEntity(control) for control in spa.blowers)
+    async_add_entities(entities)
 
 
-class BalboaPumpFanEntity(BalboaEntity, FanEntity):
-    """Representation of a Balboa Spa pump fan entity."""
+class _ControlBackedFanEntity(BalboaEntity, FanEntity):
+    """Base fan entity wrapping a multi-speed SpaControl."""
 
     _attr_supported_features = (
         FanEntityFeature.SET_SPEED
@@ -36,18 +38,15 @@ class BalboaPumpFanEntity(BalboaEntity, FanEntity):
         | FanEntityFeature.TURN_ON
     )
 
-    _attr_translation_key = "pump"
-
     def __init__(self, control: SpaControl) -> None:
-        """Initialize a Balboa pump fan entity."""
         super().__init__(control.client, control.name)
         self._control = control
-        self._attr_translation_placeholders = {
-            "index": f"{cast(int, control.index) + 1}"
-        }
+        if control.index is not None:
+            self._attr_translation_placeholders = {
+                "index": f"{cast(int, control.index) + 1}"
+            }
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        """Turn the pump off."""
         await self._control.set_state(OffOnState.OFF)
 
     async def async_turn_on(
@@ -56,13 +55,11 @@ class BalboaPumpFanEntity(BalboaEntity, FanEntity):
         preset_mode: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Turn the pump on (by default on max speed)."""
         if percentage is None:
             percentage = 100
         await self.async_set_percentage(percentage)
 
     async def async_set_percentage(self, percentage: int) -> None:
-        """Set the speed of the pump."""
         if percentage > 0:
             state = math.ceil(
                 percentage_to_ranged_value((1, self.speed_count), percentage)
@@ -73,7 +70,6 @@ class BalboaPumpFanEntity(BalboaEntity, FanEntity):
 
     @property
     def percentage(self) -> int | None:
-        """Return the speed of the pump."""
         if self._control.state == UnknownState.UNKNOWN:
             return None
         if self._control.state == OffOnState.OFF:
@@ -82,12 +78,28 @@ class BalboaPumpFanEntity(BalboaEntity, FanEntity):
 
     @property
     def is_on(self) -> bool | None:
-        """Return true if the pump is running."""
         if self._control.state == UnknownState.UNKNOWN:
             return None
         return self._control.state != OffOnState.OFF
 
     @property
     def speed_count(self) -> int:
-        """Return the number of different speed settings the pump supports."""
         return int(max(self._control.options))
+
+
+class BalboaPumpFanEntity(_ControlBackedFanEntity):
+    """Representation of a Balboa Spa pump fan entity."""
+
+    _attr_translation_key = "pump"
+
+
+class BalboaBlowerFanEntity(_ControlBackedFanEntity):
+    """Representation of a Balboa Spa air blower (aka bubble jets) fan entity.
+
+    Surfaced as its own fan entity instead of hiding inside the climate
+    entity's fan_mode dropdown — much more discoverable, and the right
+    place to find "where do I turn the bubbles on/off in HA".
+    """
+
+    _attr_translation_key = "blower"
+    _attr_icon = "mdi:chart-bubble"

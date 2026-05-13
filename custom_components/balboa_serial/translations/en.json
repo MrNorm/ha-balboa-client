@@ -46,7 +46,8 @@
       }
     },
     "fan": {
-      "pump": { "name": "Pump {index}" }
+      "pump": { "name": "Pump {index}" },
+      "blower": { "name": "Blower {index}" }
     },
     "light": {
       "light_of_n": { "name": "Light {index}" },
