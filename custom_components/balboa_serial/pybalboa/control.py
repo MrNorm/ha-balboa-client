@@ -161,6 +161,22 @@ class SpaControl(EventMixin):
         """Update the control's current state."""
         if self._state_value != state:
             self._state_value = state
+            # Some BP-series spas under-report blower (and pump) state counts in
+            # DEVICE_CONFIGURATION — the hardware actually cycles through more
+            # speeds than device-config claimed. When we observe a state value
+            # higher than our current option range, auto-expand.
+            if (
+                isinstance(state, int)
+                and state >= self._states
+                and self.control_type in (ControlType.PUMP, ControlType.BLOWER)
+            ):
+                wanted = state + 1
+                # snap up to the next supported option-set size (2, 3, or 4)
+                for size in (3, 4):
+                    if size >= wanted and size in STATE_OPTIONS_MAP and size > self._states:
+                        self._states = size
+                        self._options = STATE_OPTIONS_MAP[size]
+                        break
             self._state = next(
                 (option for option in self._options if option == state),
                 self._options[-1]

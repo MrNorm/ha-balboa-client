@@ -30,13 +30,14 @@ async def async_setup_entry(
 
 
 class _ControlBackedFanEntity(BalboaEntity, FanEntity):
-    """Base fan entity wrapping a multi-speed SpaControl."""
+    """Base fan entity wrapping a SpaControl.
 
-    _attr_supported_features = (
-        FanEntityFeature.SET_SPEED
-        | FanEntityFeature.TURN_OFF
-        | FanEntityFeature.TURN_ON
-    )
+    `supported_features` is a property (not a class attr) because the
+    underlying SpaControl can auto-expand its option range when the
+    hardware reports more states than DEVICE_CONFIGURATION claimed (BP-
+    series spas commonly under-report blower speed counts). We re-evaluate
+    each call so HA picks up SET_SPEED once expansion happens.
+    """
 
     def __init__(self, control: SpaControl) -> None:
         super().__init__(control.client, control.name)
@@ -45,6 +46,13 @@ class _ControlBackedFanEntity(BalboaEntity, FanEntity):
             self._attr_translation_placeholders = {
                 "index": f"{cast(int, control.index) + 1}"
             }
+
+    @property
+    def supported_features(self) -> FanEntityFeature:
+        features = FanEntityFeature.TURN_OFF | FanEntityFeature.TURN_ON
+        if int(max(self._control.options)) > 1:
+            features |= FanEntityFeature.SET_SPEED
+        return features
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         await self._control.set_state(OffOnState.OFF)
