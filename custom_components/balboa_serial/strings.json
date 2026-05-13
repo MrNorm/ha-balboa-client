@@ -86,7 +86,26 @@
       }
     },
     "switch": {
-      "filter_cycle_2_enabled": { "name": "Filter cycle 2 enabled" }
+      "filter_cycle_2_enabled": { "name": "Filter cycle 2 enabled" },
+      "twenty_four_hour_time": { "name": "24-hour clock" },
+      "aux": { "name": "Aux {index}" },
+      "mister": { "name": "Mister {index}" }
+    },
+    "sensor": {
+      "spa_state": {
+        "name": "Spa state",
+        "state": {
+          "running": "Running",
+          "initializing": "Initializing",
+          "hold_mode": "Hold mode",
+          "ab_temps_on": "A/B temps on",
+          "test_mode": "Test mode",
+          "unknown": "Unknown"
+        }
+      },
+      "heater_type": { "name": "Heater type" },
+      "voltage": { "name": "Voltage" },
+      "software_version": { "name": "Software version" }
     },
     "time": {
       "filter_cycle_end": { "name": "Filter cycle {index} end" },

@@ -22,6 +22,7 @@ PLATFORMS = [
     Platform.FAN,
     Platform.LIGHT,
     Platform.SELECT,
+    Platform.SENSOR,
     Platform.SWITCH,
     Platform.TIME,
 ]
