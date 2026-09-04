@@ -1,12 +1,17 @@
 name: Validate
 
+# NO SCHEDULE. There was a weekly Monday cron here to catch HACS/hassfest spec
+# changes, and it did exactly that: HACS made "the repository has no license" a
+# hard failure, so from 2026-07-06 every Monday run failed on a repo that had not
+# changed. A weekly red build nobody intends to act on is worse than no signal,
+# because it sits next to the checks that do mean something. Validation still runs
+# on push, on pull request, and on demand — when a change is actually being made
+# and someone is there to read the result.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: "0 6 * * 1"  # weekly Monday refresh — catches HACS/hassfest spec changes
 
 jobs:
   hassfest:
