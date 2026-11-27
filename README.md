@@ -83,3 +83,7 @@ Everything else in pybalboa is unmodified.
 - [Home Assistant core `balboa` integration](https://github.com/home-assistant/core/tree/dev/homeassistant/components/balboa) — the integration scaffolding ported here.
 - [ccutrer/balboa_worldwide_app](https://github.com/ccutrer/balboa_worldwide_app) — original protocol reverse-engineering.
 - [jshank/bwalink](https://github.com/jshank/bwalink) — the prior-art Docker+MQTT bridge this replaces.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
